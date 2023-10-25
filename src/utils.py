@@ -22,19 +22,19 @@ def create_packet(packet: Packet):
     return b";".join(l)
 
 
-def check_routes(routes_file_name: str, dest_addr: tuple[str,int]) -> tuple[str,int] | None :
+def check_routes(routes_file_name: str, dest_addr: tuple[str,int], address_from) -> tuple[str,int] | None :
     dest_ip = dest_addr[0]
     dest_port = dest_addr[1]
     with open(routes_file_name, "r") as f:
         lines = f.readlines()
         for line in lines:
-            network_ip, range_port_min, range_port_max, ip_para_llegar, puerto_para_llegar = line.split(" ")
+            network_ip, puerto_inicial, puerto_final, ip_para_llegar, puerto_para_llegar = line.split(" ")
             
-            range_port_min = int(range_port_min)
-            range_port_max = int(range_port_max)
+            puerto_inicial = int(puerto_inicial)
+            puerto_final = int(puerto_final)
             
             # TODO: checkear que dest_ip == network_ip
-            if dest_port in range(range_port_min, range_port_max+1):
+            if dest_port in range(puerto_inicial, puerto_final+1) and address_from != int(puerto_para_llegar):
                 return ip_para_llegar, int(puerto_para_llegar)
         
         return None
