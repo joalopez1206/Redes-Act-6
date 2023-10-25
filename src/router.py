@@ -8,6 +8,8 @@ if len(sys.argv) != 4:
 ip = sys.argv[1]
 port = int(sys.argv[2])
 ADDRESS = (ip,port)
+TABLE_FILE = sys.argv[3]
+
 
 router_sock: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 router_sock.bind(ADDRESS)
