@@ -8,6 +8,7 @@ if len(sys.argv) != 4:
 
 ip = sys.argv[1]
 port = int(sys.argv[2])
+
 ADDRESS = (ip,port)
 TABLE_FILE = sys.argv[3]
 
@@ -18,7 +19,7 @@ router_sock.bind(ADDRESS)
 
 
 if __name__ == "__main__":
-    print("Starting router!")
+    print(f"Starting router! {ip}@{port}")
     while True:
         msg, addr = router_sock.recvfrom(1024)
         msg = msg.strip()
