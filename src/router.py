@@ -22,6 +22,7 @@ if __name__ == "__main__":
     print(f"Starting router! {ip}@{port}")
     while True:
         msg, addr = router_sock.recvfrom(1024)
+        # para quitar el \n
         msg = msg.strip()
         recv_packet = parse_packet(msg)
         recv_address = get_address(recv_packet)
