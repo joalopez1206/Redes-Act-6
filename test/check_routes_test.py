@@ -22,6 +22,6 @@ def test_none_route():
     # Supongamos que llega un paquete para 1 que dice que llega hasta 4
     address = ("127.0.0.1", 8884)
     #Esperamos que de None
-    new_address = check_routes(TEXT_FOLDER+"/test_router1.txt", address, 8881)
+    new_address = check_routes(TEXT_FOLDER+"/test_router1.txt", address, 8881, is_default_router=True)
 
     assert new_address == None

@@ -1,10 +1,12 @@
 from __future__ import annotations
 from dataclasses import dataclass
+DEFAULT_PORT = 7000
 
 @dataclass
 class Packet:
     ip: str
     port: int
+    ttl: int
     msg: bytes
 
 #Lo que guarda el cache es
@@ -15,20 +17,20 @@ def get_address(packet: Packet) -> tuple[str,int]:
     return (packet.ip, packet.port)
 
 def parse_packet(msg: bytes):
-    ip, port, msg = msg.split(b";")
+    ip, port, ttl, msg = msg.split(b";")
     ip = ip.decode()
+    ttl = int(ttl)
     port = int(port)
-    return Packet(ip, port, msg)
+    return Packet(ip, port, ttl,  msg)
 
 
 def create_packet(packet: Packet):
-    l = [packet.ip.encode(), str(packet.port).encode(), packet.msg]
+    l = [packet.ip.encode(), str(packet.port).encode(), str(packet.ttl).encode(), packet.msg]
     return b";".join(l)
 
 
-def check_routes(routes_file_name: str, dest_addr: tuple[str,int], address_from) -> tuple[str,int] | None :
+def check_routes(routes_file_name: str, dest_addr: tuple[str,int], address_from, is_default_router=False) -> tuple[str,int] | None :
     global cache
-
     dest_ip, dest_port = dest_addr
     #si la direccion de cache no esta en el destino
     if cache.get(dest_addr) == None:
@@ -43,22 +45,31 @@ def check_routes(routes_file_name: str, dest_addr: tuple[str,int], address_from)
             
             puerto_inicial = int(puerto_inicial)
             puerto_final = int(puerto_final)
-            return dest_port in range(puerto_inicial, puerto_final+1) and address_from != int(puerto_para_llegar)
+            return dest_port in range(puerto_inicial, puerto_final+1) and \
+                address_from != int(puerto_para_llegar) and \
+                puerto_final != DEFAULT_PORT
         
         #obtenemos los posibles puertos destinos
-        lines = list(filter(filter_lines, lines))
+        lines_filtered = list(filter(filter_lines, lines))
 
         # Si es posible llegar a ellos
-        if len(lines) != 0:
+        if len(lines_filtered) != 0:
             print(cache)
 
             #vemos que para llegar, tomo la llave, obtengo la linea donde estoy actualmente y obtengo la ip 
             # y el puerto para llegar
-            _,_,_,ip_para_llegar, puerto_para_llegar = lines[cache[dest_addr]%len(lines)].split(" ")
+            _,_,_, ip_para_llegar, puerto_para_llegar = lines_filtered[cache[dest_addr]%len(lines_filtered)].split(" ")
 
             # le sumo 1 al cache
             cache[dest_addr] +=1
 
             #retorno la direccion
             return ip_para_llegar, int(puerto_para_llegar)
+        
+        #si no, si soy un router nomral
+        elif not is_default_router:
+            _,_,_, ip_para_llegar, puerto_para_llegar = lines[-1].split(" ")
+            return ip_para_llegar, int(puerto_para_llegar)
+        
+        # si no, soy el default y no encontre nada y por lo tanto tiro none
         return None
