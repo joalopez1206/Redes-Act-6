@@ -4,6 +4,13 @@
 
 ## Codigo y desiciones
 
+En la carpeta [src](./src) esta todo el codigo, el cual se divide en
+- router.py -> para crear routers
+- utils.py  -> el cual tiene la funciones para los packets
+- prueba_router.py -> el cual tiene la prueba para los routers de el test 3 con TTL
+
+Los ejemplos usados estan en la carpeta [ejemplos](./src/ejemplos)
+
 Este informe se divide en 2 partes:
 
 1. Sin TTL
@@ -107,6 +114,9 @@ agregando al final de cada tabla las lineas
 127.0.0.1 1 8880 127.0.0.1 7000
 127.0.0.1 8886 9999 127.0.0.1 7000
 ```
+
+Donde se puede ver la ejecucion esperada.
+![aaa](./pantallaso.png)
 
 ## Con TTL
 
