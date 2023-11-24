@@ -38,7 +38,7 @@ if __name__ == "__main__":
             print(recv_packet.msg.decode())
             continue
             
-        next_hop_address = check_routes(TABLE_FILE, recv_address, addr[1], is_default_router=default)
+        next_hop_address = check_routes(TABLE_FILE, recv_address, is_default_router=default)
         
         if next_hop_address is None:
             print(f"No hay rutas hacia {recv_packet.ip} para paquete {recv_packet.port}")
