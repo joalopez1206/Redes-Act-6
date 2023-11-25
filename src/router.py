@@ -27,7 +27,7 @@ if __name__ == "__main__":
     while True:
         msg, addr = router_sock.recvfrom(1024)
         # para quitar el \n
-        msg = msg.strip()
+        msg = msg.strip(b"\n")
         recv_packet = parse_packet(msg)
         recv_address = get_address(recv_packet)
         if recv_packet.ttl<=0:

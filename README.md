@@ -18,6 +18,21 @@ Este informe se divide en 2 partes:
 
 Los tests son los mencionados en el EOL y se realizaran en el mismo orden
 
+---
+__Desicion de compatibilidad__: Esto es en retrospectiva, pero decidi que usar netcat usando enter (sin EOF), por lo que "\n" esta 
+prohibido en mensajes, asi que porfavor, usen mensajes sin "\n" dentro del mensaje. (Se que esta mal, pero en la actividad BGP remuevo eso, usando el modulo netcatudp.py).
+
+Si desean, pueden remover la linea
+```python
+msg = msg.strip("\n")
+```
+
+y usar `python3 netcatudp.py ip port`
+
+Disculpa las molestias
+
+---
+
 ### Round robin
 
 Lo que se hizo para implementar round-robin fue:
@@ -29,11 +44,27 @@ Para un mensaje que llega hacia el puerto `p` en la direccion `d`
 
 Notemos que siempre va escoger un valor distinto si hay varios caminos.
 
+__importante!__: 
+- Para varios de los tests sin ttl, se pueden replicar si usan un ttl suficientemente grande, (en mi caso use 30)
+- No obtuve tantos pantallasos debido a que los comportamientos son dificiles de capturar en imagen (si no son un gif). Pero lo descrito se puede replicar, siguiendo las instrucciones del setup de cada test.
+
 ## Sin TTL
 
 ### 1. Rutas mal formadas, ejemplo 2
 
-Si iniciamos los 3 routers, lo que esperariamos con el cambio propuesto al router 2
+---
+
+Para ejecutar:
+```sh
+python3 router.py 127.0.0.1 8881 ejemplos/prueba1/rutas_R1_v2.txt
+python3 router.py 127.0.0.1 8882 ejemplos/prueba1/rutas_R2_v2.txt 
+python3 router.py 127.0.0.1 8883 ejemplos/prueba1/rutas_R3_v2.txt
+```
+Como el codigo es con ttl, usen un ttl suficientemente grande (700) y van a ver el pingpong
+
+---
+
+Si iniciamos los 3 routers y lo que esperariamos con el cambio propuesto al router 2
 
 ```
 127.0.0.1 8881 8881 127.0.0.1 8881
@@ -41,11 +72,29 @@ Si iniciamos los 3 routers, lo que esperariamos con el cambio propuesto al route
 ```
 
 Es que si yo envio un mensaje, del R1 al R3, este nunca llegaria, ya que entraria en un loop infinito
-entre el R1 y R2, pero si envio un mensaje del router 3 al 1, este llegaria. Y esto es lo que podemos ver si iniciamos los routers con las tablas
+entre el R1 y R2, pero si envio un mensaje del router 3 al 1, este llegaria. Y esto es lo que podemos ver si iniciamos los routers con las tablas. (No supe como ilustrar que hacian un loop en una imagen, pero basta con ejecutar los 3 routers y ver que del 1 al 2 van haciendo ping pong)
 
 
 
 ### 2. Probando los paquetes de R1 a R5
+---
+
+Para ejecutar este test, 
+```sh
+python3 router.py 127.0.0.1 8881 ejemplos/rutas_R1_v3.txt
+python3 router.py 127.0.0.1 8882 ejemplos/rutas_R2_v3.txt 
+python3 router.py 127.0.0.1 8883 ejemplos/rutas_R3_v3.txt 
+python3 router.py 127.0.0.1 8884 ejemplos/rutas_R4_v3.txt
+python3 router.py 127.0.0.1 8885 ejemplos/rutas_R5_v3.txt 
+```
+y usen un ttl suficientemente grande y sigan la traza de la consola!
+
+Recuerden usar netcat en 8881
+
+```
+nc -u localhost 8881
+```
+---
 
 Se corrio el codigo 5 veces donde se observaron las siguientes rutas:
 
@@ -121,14 +170,37 @@ Donde se puede ver la ejecucion esperada.
 ## Con TTL
 
 ### 1. Rutas mal formadas, ejemplo 2
+---
+
+Para ejecutar:
+
+```sh
+python3 router.py 127.0.0.1 8881 ejemplos/prueba1/rutas_R1_v2.txt
+python3 router.py 127.0.0.1 8882 ejemplos/prueba1/rutas_R2_v2.txt 
+python3 router.py 127.0.0.1 8883 ejemplos/prueba1/rutas_R3_v2.txt
+```
+
+---
 
 El mismo ejemplo mencionado anteriormente con la tabla de ruta erronea, solo que ahora como tenemos un ttl
 no esperamos un bucle infinito, ya que eventualmente ocurrira que `ttl==0` y por lo tanto descartamos el mensaje.
 En particular lo que se observa es que el paquete rebota 5 veces por cada router y luego se descarta
 
 ### 2 y 3. Enviando varios datos
+---
 
-Ahora enviamos el siguiente archivo, con los headers y a la direccion `"127.0.0.1;8885;10" "127.0.0.1" "8881"`
+Ahora enviamos el siguiente archivo, usando el script `parser_test.py`, con los headers y a la direccion `"127.0.0.1;8885;10" "127.0.0.1" "8881"`
+
+Para ejecutar todos los routers:
+```sh
+python3 router.py 127.0.0.1 8881 ejemplos/rutas_R1_v3.txt
+python3 router.py 127.0.0.1 8882 ejemplos/rutas_R2_v3.txt 
+python3 router.py 127.0.0.1 8883 ejemplos/rutas_R3_v3.txt 
+python3 router.py 127.0.0.1 8884 ejemplos/rutas_R4_v3.txt
+python3 router.py 127.0.0.1 8885 ejemplos/rutas_R5_v3.txt 
+```
+
+---
 
 ```
 lo que importa realmente
