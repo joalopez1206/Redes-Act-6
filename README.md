@@ -44,7 +44,7 @@ Para un mensaje que llega hacia el puerto `p` en la direccion `d`
 
 Notemos que siempre va escoger un valor distinto si hay varios caminos.
 
-__importante!__: 
+__importante__: 
 - Para varios de los tests sin ttl, se pueden replicar si usan un ttl suficientemente grande, (en mi caso use 30)
 - No obtuve tantos pantallasos debido a que los comportamientos son dificiles de capturar en imagen (si no son un gif). Pero lo descrito se puede replicar, siguiendo las instrucciones del setup de cada test.
 
